@@ -3,12 +3,12 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import ExpenseListTable from "../../../components/ExpenseListTable";
 import { useUser } from '@clerk/nextjs';
-import { Loader as Spinner } from 'lucide-react';
+
 
 interface Expense {
   id: number;
   name: string;
-  amount: string;
+  amount: number;
   createdAt: string;
 }
 
@@ -30,13 +30,18 @@ function ExpensesScreen() {
       const response = await axios.get(`/api/expenses`, {
         params: { userId }
       });
-      setExpensesList(response.data);
+      const expenses: Expense[] = response.data.map((expense: any) => ({
+        ...expense,
+        amount: Number(expense.amount), // Convert 'amount' to number
+      }));
+      setExpensesList(expenses);
     } catch (error) {
       console.log(error);
     } finally {
       setLoading(false); 
     }
   };
+  
 
   return (
     <div className='p-10'>
