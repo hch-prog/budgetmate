@@ -32,9 +32,6 @@ export async function POST(req: NextRequest) {
   }
 }
 
-
-
-
 export async function GET() {
   try {
     const allIncome = await prisma.income.findMany();
@@ -48,4 +45,64 @@ export async function GET() {
   }
 }
 
+
+
+export async function PUT(req: NextRequest) {
+  try {
+    const body = await req.json();
+    const { id, name, amount, icon, userId } = body;
+
+   
+    if (!id || !name || !amount || !icon || !userId) {
+      return NextResponse.json(
+        { error: "Missing required fields" },
+        { status: 400 }
+      );
+    }
+
+    const updatedIncome = await prisma.income.update({
+      where: { id },
+      data: { name, amount, icon, userId },
+    });
+
+    return NextResponse.json(updatedIncome, { status: 200 });
+
+  } catch (error) {
+    console.error("Error updating income:", error);
+
+    return NextResponse.json(
+      { error: "Error occurred while updating income" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(req: NextRequest) {
+  try {
+   
+    const { searchParams } = new URL(req.url);
+    const id = searchParams.get("id");
+
+  
+    if (!id) {
+      return NextResponse.json(
+        { error: "Missing required fields" },
+        { status: 400 }
+      );
+    }
+
+   
+    const deleteIncome = await prisma.income.delete({ where: { id: Number(id) } });
+
+  
+    return NextResponse.json(deleteIncome, { status: 200 });
+
+  } catch (error) {
+    console.error("Error deleting income:", error);
+    return NextResponse.json(
+      { error: "Error occurred while deleting income" },
+      { status: 500 }
+    );
+  }
+}
 

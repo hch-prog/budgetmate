@@ -8,16 +8,15 @@ import axios from "axios";
 function IncomeList() {
   const [incomelist, setIncomelist] = useState([]);
   const { user } = useUser();
+
   useEffect(() => {
     if (user) {
       getIncomelist();
     }
-
   }, [user]);
 
   const getIncomelist = async () => {
     const response = await axios.get(`/api/income`);
-
     setIncomelist(response.data);
   };
 
@@ -29,16 +28,20 @@ function IncomeList() {
       >
         <CreateIncomes refreshData={() => getIncomelist()} />
         {incomelist?.length > 0
-          ? incomelist.map((budget, index) => (
-            <IncomeItem budget={budget} key={index} />
-          ))
+          ? incomelist.map((income, index) => (
+              <IncomeItem
+                income={income}
+                key={index}
+                refreshData={() => getIncomelist()} // Pass the refresh function to IncomeItem
+              />
+            ))
           : [1, 2, 3, 4, 5].map((item, index) => (
-            <div
-              key={index}
-              className="w-full bg-slate-200 rounded-lg
+              <div
+                key={index}
+                className="w-full bg-slate-200 rounded-lg
         h-[150px] animate-pulse"
-            ></div>
-          ))}
+              ></div>
+            ))}
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
 import prisma from "@/lib/prisma";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 interface BudgetRequestBody {
   name: string;
@@ -67,5 +67,65 @@ export async function GET() {
   } catch (error) {
     console.error("Error fetching budgets:", error);
     return NextResponse.json({ error: "Error occurred while fetching budgets" }, { status: 500 });
+  }
+}
+
+export async function PUT(req: Request) {
+  try {
+    const body = await req.json();  
+    console.log("Request Body:", body);
+    
+    const { name, amount, createdAt,id } = body;
+
+    if (!id) {
+        console.log("Error: Expense ID is missing");
+        return NextResponse.json(
+            { error: "Expense ID is missing." },
+            { status: 400 }
+        );
+    }
+    const expenseUpdated = await prisma.budget.update({
+        where: { id: parseInt(id) }, 
+        data: { name, amount, createdAt }
+    });
+    
+    return NextResponse.json(
+          { message: "Expense updated successfully", data: expenseUpdated },
+          { status: 200 }
+    );
+  } catch (error) {
+      console.error("Error updating expense:", error);
+
+      return NextResponse.json(
+          { error: "Error occurred while updating expense." },
+          { status: 500 }
+    );
+  }
+}
+
+
+export async function DELETE(req: NextRequest) {
+  try {
+    const url = new URL(req.url);
+    const deleteId = url.searchParams.get("id");
+
+    if (!deleteId) {
+      return NextResponse.json(
+        { error: "Expense Id is not present there." },
+        { status: 400 }
+      )
+    }
+    
+    await prisma.expense.delete({
+      where: { id: parseInt(deleteId) }
+    })
+    
+    return NextResponse.json(
+      { message: "Deleted" },
+      { status: 200 }
+    )
+  } catch (error) {
+    console.error("Error deleteing budget:", error);
+    return NextResponse.json({ error: "Error occurred while  deleteing budget" }, { status: 500 });
   }
 }
