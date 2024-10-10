@@ -1,28 +1,37 @@
-import React from "react";  // Add this line
+import React from "react";
 import { SignIn } from "@clerk/nextjs";
-import Image from "next/image"; 
+import Image from "next/image";
 
 export default function Page() {
   return (
-    <section className="bg-white">
-      <div className="lg:grid lg:min-h-screen lg:grid-cols-12">
-        <section className="relative flex h-32 items-end bg-gray-900 lg:col-span-5 lg:h-full xl:col-span-6">
+    <section className="bg-gray-50 min-h-screen flex flex-col items-center justify-center">
+      <div className="lg:grid lg:grid-cols-12 lg:min-h-screen w-full">
+        <section className="relative h-64 lg:col-span-5 lg:h-auto xl:col-span-6 bg-gray-900">
           <Image
             alt="Background image"
             src="https://images.unsplash.com/photo-1605106702734-205df224ecce?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80"
-            className="absolute inset-0 h-full w-full object-cover opacity-80"
-            layout="fill" 
-            objectFit="cover" 
-            priority 
+            className="absolute inset-0 w-full h-full object-cover opacity-80"
+            layout="fill"
+            objectFit="cover"
+            priority
           />
+          <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white text-center">
+              Welcome to BudgetMate
+            </h1>
+          </div>
         </section>
 
-        <main className="flex items-center justify-center px-8 py-8 sm:px-12 lg:col-span-7 lg:px-16 lg:py-12 xl:col-span-6">
-          <div className="max-w-xl lg:max-w-3xl">
-            <div className="relative -mt-16 block lg:hidden">
-                <h1 className="mt-2 text-2xl font-bold text-gray-900 sm:text-3xl md:text-4xl">
-                Welcome to BudgetMate
-                </h1>
+       
+        <main className="flex items-center justify-center p-6 sm:p-12 lg:col-span-7 xl:col-span-6">
+          <div className="w-full max-w-md space-y-8 bg-white rounded-lg shadow-lg p-8">
+            <div className="space-y-4 text-center">
+              <h2 className="text-3xl font-bold text-gray-900">
+                Sign in to your account
+              </h2>
+              <p className="text-gray-500">
+                Get started with BudgetMate, your AI-powered finance advisor.
+              </p>
             </div>
             <SignIn />
           </div>
