@@ -4,7 +4,6 @@ import axios from 'axios';
 import ExpenseListTable from "../../../components/ExpenseListTable";
 import { useUser } from '@clerk/nextjs';
 
-
 interface Expense {
   id: number;
   name: string;
@@ -13,16 +12,17 @@ interface Expense {
 }
 
 function ExpensesScreen() {
-  const [expensesList, setExpensesList] = useState<Expense[]>([]);
-  const [loading, setLoading] = useState(true);  // Loader state
-  const { user } = useUser();
-  const userId = user?.id;
+  const [expensesList, setExpensesList] = useState<Expense[]>([]); 
+  const [loading, setLoading] = useState<boolean>(true); 
+  const { user } = useUser(); 
+  const userId = user?.id; 
 
   useEffect(() => {
     if (userId) {
-      getAllExpenses(userId);
+      getAllExpenses(userId); 
     }
   }, [userId]);
+
 
   const getAllExpenses = async (userId: string) => {
     setLoading(true); 
@@ -32,16 +32,15 @@ function ExpensesScreen() {
       });
       const expenses: Expense[] = response.data.map((expense: any) => ({
         ...expense,
-        amount: Number(expense.amount), // Convert 'amount' to number
+        amount: Number(expense.amount),
       }));
-      setExpensesList(expenses);
+      setExpensesList(expenses); 
     } catch (error) {
       console.log(error);
     } finally {
-      setLoading(false); 
+      setLoading(false);
     }
   };
-  
 
   return (
     <div className='p-10'>
@@ -67,7 +66,7 @@ function ExpensesScreen() {
         </div>
       ) : (
         <ExpenseListTable 
-          refreshData={() => userId && getAllExpenses(userId)}  
+          refreshData={() => userId && getAllExpenses(userId)} 
           expensesList={expensesList} 
         />
       )}

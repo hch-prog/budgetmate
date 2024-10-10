@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { TrashIcon, PencilSquareIcon } from "@heroicons/react/24/outline";
-import EditIncomes from "./EditIncomes"; // Import your EditIncomes component
+import EditIncomes from "./EditIncomes"; 
 import axios from "axios";
 import { toast } from "sonner";
 
@@ -15,7 +15,7 @@ interface Income {
 
 function IncomeItem({ income, refreshData }: { income: Income, refreshData: () => void }) {
   const [isHovered, setIsHovered] = useState(false);
-  const [isEditOpen, setIsEditOpen] = useState(false); // State to control dialog visibility
+  const [isEditOpen, setIsEditOpen] = useState(false);
 
   const handleDelete = async () => {
     try {
@@ -47,29 +47,29 @@ function IncomeItem({ income, refreshData }: { income: Income, refreshData: () =
         <h2 className="font-bold text-primary text-lg">${income.amount}</h2>
       </div>
 
-      {/* Icons displayed on hover */}
+      
       {isHovered && (
         <div className="absolute top-3 right-3 flex gap-2">
-          {/* Edit icon */}
+       
           <PencilSquareIcon
             className="h-6 w-6 text-gray-500 hover:text-blue-500 cursor-pointer"
-            onClick={() => setIsEditOpen(true)} // Open the edit dialog
+            onClick={() => setIsEditOpen(true)} 
           />
-          {/* Trash icon */}
+          
           <TrashIcon
             className="h-6 w-6 text-gray-500 hover:text-red-500 cursor-pointer"
-            onClick={handleDelete} // Trigger delete on click
+            onClick={handleDelete} 
           />
         </div>
       )}
 
-      {/* Edit dialog */}
+   
       {isEditOpen && (
         <EditIncomes
-          income={income} // Pass the income data to the EditIncomes component
+          income={income} 
           refreshData={() => {
-            refreshData(); // Call the parent refresh function
-            setIsEditOpen(false); // Close the dialog after the edit is complete
+            refreshData(); 
+            setIsEditOpen(false); 
           }}
         />
       )}

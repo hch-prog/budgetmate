@@ -87,7 +87,7 @@ function EditIncomes({ income, refreshData }: EditIncomeProps) {
               <div className="mt-2">
                 <h2 className="text-black font-medium my-1">Source Name</h2>
                 <Input
-                  placeholder={income.name} // Show current income name
+                  placeholder={income.name} 
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                 />
@@ -96,7 +96,7 @@ function EditIncomes({ income, refreshData }: EditIncomeProps) {
                 <h2 className="text-black font-medium my-1">Monthly Amount</h2>
                 <Input
                   type="number"
-                  placeholder={String(income.amount)} // Show current income amount
+                  placeholder={String(income.amount)} 
                   value={String(amount)}
                   onChange={(e) => setAmount(Number(e.target.value))}
                 />

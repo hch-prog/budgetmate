@@ -25,8 +25,8 @@ const formatDate = (dateString: string) => {
 };
 
 const ExpenseListTable: React.FC<ExpenseListTableProps> = ({ expensesList, refreshData }) => {
-  const [editId, setEditId] = useState<number | null>(null); // Track which expense is being edited
-  const [editData, setEditData] = useState<Partial<Expense>>({}); // Track the edited values
+  const [editId, setEditId] = useState<number | null>(null); 
+  const [editData, setEditData] = useState<Partial<Expense>>({}); 
 
   const deleteExpense = async (expense: Expense) => {
     try {
@@ -43,24 +43,23 @@ const ExpenseListTable: React.FC<ExpenseListTableProps> = ({ expensesList, refre
 
   const startEditing = (expense: Expense) => {
     setEditId(expense.id);
-    setEditData(expense); // Set initial edit data
+    setEditData(expense); 
   };
 
   const handleEditChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEditData({
       ...editData,
-      [e.target.name]: e.target.name === 'amount' ? Number(e.target.value) : e.target.value, // Convert amount to number
+      [e.target.name]: e.target.name === 'amount' ? Number(e.target.value) : e.target.value, 
     });
   };
-  
 
   const saveExpense = async () => {
     try {
       const result = await axios.put(`/api/expenses?id=${editId}`, editData);
       if (result.status === 200) {
         toast("Expense Updated!");
-        setEditId(null); // Exit edit mode
-        refreshData(); // Refresh data after saving
+        setEditId(null); 
+        refreshData(); 
       }
     } catch (error) {
       console.error("Error updating expense:", error);
@@ -74,65 +73,72 @@ const ExpenseListTable: React.FC<ExpenseListTableProps> = ({ expensesList, refre
         <h2 className="font-bold text-lg">Latest Expenses</h2>
         <CreateExpense />
       </div>
-      <div className="grid grid-cols-4 rounded-tl-xl rounded-tr-xl bg-slate-200 p-2 mt-3">
+
+    
+      <div className="grid grid-cols-4 gap-4 bg-slate-200 p-3 mt-3 rounded-t-lg">
         <h2 className="font-bold">Name</h2>
         <h2 className="font-bold">Amount</h2>
         <h2 className="font-bold">Date</h2>
-        <div className="font-bold">Action</div>
+        <h2 className="font-bold text-center">Actions</h2>
       </div>
+
+     
       {expensesList.map((expense) => (
-        <div className="grid grid-cols-4 bg-slate-50 rounded-bl-xl rounded-br-xl p-2" key={expense.id}>
+        <div className="grid grid-cols-4 gap-4 bg-white p-3 border-b last:rounded-b-lg" key={expense.id}>
           {editId === expense.id ? (
-            // Editing mode: render input fields
             <>
               <input
                 type="text"
                 name="name"
                 value={editData.name ?? ''}
                 onChange={handleEditChange}
-                className="border p-1"
+                className="border p-1 rounded"
               />
               <input
                 type="text"
                 name="amount"
                 value={editData.amount ?? ''}
                 onChange={handleEditChange}
-                className="border p-1"
+                className="border p-1 rounded"
               />
               <input
                 type="text"
                 name="createdAt"
                 value={editData.createdAt ?? ''}
                 onChange={handleEditChange}
-                className="border p-1"
+                className="border p-1 rounded"
               />
-              <div className="flex justify-center space-x-4">
-                <button onClick={saveExpense} className="text-green-500 cursor-pointer">
+              <div className="flex justify-center space-x-2">
+                <button
+                  onClick={saveExpense}
+                  className="text-green-600 hover:text-green-800 cursor-pointer"
+                >
                   Save
                 </button>
-                <button onClick={() => setEditId(null)} className="text-gray-500 cursor-pointer">
+                <button
+                  onClick={() => setEditId(null)}
+                  className="text-gray-600 hover:text-gray-800 cursor-pointer"
+                >
                   Cancel
                 </button>
               </div>
             </>
           ) : (
-            // Display mode: render text
+           
             <>
-              <h2>{expense.name}</h2>
-              <h2>{expense.amount}</h2>
-              <h2>{formatDate(expense.createdAt)}</h2>
-              <div className="flex justify-center space-x-4">
+              <span>{expense.name}</span>
+              <span>${expense.amount}</span>
+              <span>{formatDate(expense.createdAt)}</span>
+              <div className="flex justify-center space-x-2">
                 <button
                   onClick={() => deleteExpense(expense)}
-                  className="text-red-500 cursor-pointer"
-                  aria-label="Delete Expense"
+                  className="text-red-600 hover:text-red-800 cursor-pointer"
                 >
                   Delete
                 </button>
                 <button
                   onClick={() => startEditing(expense)}
-                  className="text-gray-500 cursor-pointer"
-                  aria-label="Edit Expense"
+                  className="text-gray-600 hover:text-gray-800 cursor-pointer"
                 >
                   Edit
                 </button>
@@ -146,5 +152,3 @@ const ExpenseListTable: React.FC<ExpenseListTableProps> = ({ expensesList, refre
 };
 
 export default ExpenseListTable;
-
-

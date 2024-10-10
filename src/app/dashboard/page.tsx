@@ -9,10 +9,8 @@ import axios from 'axios';
 import { Loader as Spinner } from "lucide-react";
 import CardInfo from "@/components/CardInfo";
 
-
 interface ProtectProps {
   children: ReactNode;
-  fallback?: ReactNode; 
 }
 
 interface Expense {
@@ -33,8 +31,8 @@ interface Budget {
   createdAt: string;
   updatedAt: string;
   expenses: Expense[];
-  totalSpend: number;  
-  totalItem: number;   
+  totalSpend: number;
+  totalItem: number;
 }
 
 interface Income {
@@ -47,19 +45,19 @@ interface Income {
   updatedAt: string;
 }
 
-const Protect = ({ children, fallback }: ProtectProps) => {
+const Protect = ({ children }: ProtectProps) => {
   const { isLoaded, isSignedIn } = useUser();
 
   if (!isLoaded) {
     return (
       <div className="flex items-center justify-center h-screen">
         <div className="flex flex-col items-center">
-          <Spinner className="animate-spin h-16 w-16 text-blue-500" /> 
-          <p className="text-gray-500 mt-4">Loading your dashboard...</p> 
+          <Spinner className="animate-spin h-16 w-16 text-blue-500" />
+          <p className="text-gray-500 mt-4">Loading your dashboard...</p>
         </div>
       </div>
-    );  
-  } 
+    );
+  }
 
   if (!isSignedIn) {
     return <RedirectToSignIn />;
@@ -78,21 +76,21 @@ function Dashboard() {
   const [loadingIncome, setLoadingIncome] = useState(true);
   const [loadingExpenses, setLoadingExpenses] = useState(true);
 
-  useEffect(()=>{
-    if(user){
-      const check =async ()=>{
-        try {
-          await axios.post('api/user',{userId: user.id})
-          checkData(user.id);
-        } catch (error) {
-          console.error("Error checking/creating user data", error);
-        }
-      }
-
-      check();
-      checkData(user.id);
+  useEffect(() => {
+    if (user) {
+      checkUserData(user.id);
     }
-  },[user]);
+  }, [user]);
+
+  const checkUserData = async (userId: string) => {
+    try {
+      await axios.post('/api/user', { userId });
+    } catch (error) {
+      console.error("Error checking/creating user data", error);
+    } finally {
+      await checkData(userId);
+    }
+  };
 
   const checkData = async (userId: string) => {
     setLoadingBudgets(true);
@@ -106,20 +104,12 @@ function Dashboard() {
         axios.get(`/api/budget`, { params: { userId } }),
       ]);
 
-      if (getExpenses.status === 200) {
-        setExpensesList(getExpenses.data);
-        setLoadingExpenses(false);
-      }
-      if (getIncome.status === 200) {
-        setIncomeList(getIncome.data);
-        setLoadingIncome(false);
-      }
-      if (getBudget.status === 200) {
-        setBudgetList(getBudget.data);
-        setLoadingBudgets(false);
-      }
+      setExpensesList(getExpenses.data);
+      setIncomeList(getIncome.data);
+      setBudgetList(getBudget.data);
     } catch (error) {
       console.log("Error fetching data, using static data.", error);
+    } finally {
       setLoadingBudgets(false);
       setLoadingIncome(false);
       setLoadingExpenses(false);
@@ -139,7 +129,7 @@ function Dashboard() {
           <p className="ml-4 text-gray-500">Loading financial data...</p>
         </div>
       ) : (
-        <CardInfo budgetList={budgetList} incomeList={incomeList} expensesList={expensesList}/>
+        <CardInfo budgetList={budgetList} incomeList={incomeList} expensesList={expensesList} />
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 mt-6 gap-5">
@@ -159,7 +149,7 @@ function Dashboard() {
               <p className="ml-4 text-gray-500">Loading expenses data...</p>
             </div>
           ) : (
-            <ExpenseListTable expensesList={expensesList} refreshData={() => {}} />
+            <ExpenseListTable expensesList={expensesList} refreshData={() => user && checkData(user?.id)} />
           )}
         </div>
 
@@ -174,7 +164,11 @@ function Dashboard() {
             ))
           ) : (
             budgetList.map((budget) => (
-              <BudgetItem budget={budget} key={budget.id} />
+              <BudgetItem
+                budget={budget}
+                key={budget.id}
+                refreshData={() => user && checkData(user?.id)}
+              />
             ))
           )}
         </div>

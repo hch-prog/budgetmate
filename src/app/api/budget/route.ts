@@ -36,7 +36,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json(makeBudget, { status: 201 });
   } catch (error) {
-    console.error("Detailed error:", error);
+    console.error("Error occurred while creating budget:", error);
     return NextResponse.json(
       { error: "Error occurred while creating budget" },
       { status: 500 }
@@ -52,16 +52,21 @@ export async function GET() {
       },
     });
 
-    const updatedBudgets = budgets.map((budget) => {
-      const totalSpend = budget.expenses.reduce(
+    const updatedBudgets = await Promise.all(budgets.map(async (budget) => {
+      const matchingExpenses = await prisma.expense.findMany({
+        where: { name: budget.name },
+      });
+
+      const totalSpend = matchingExpenses.reduce(
         (total, expense) => total + Number(expense.amount),
         0
       );
+
       return {
         ...budget,
         totalSpend,
       };
-    });
+    }));
 
     return NextResponse.json(updatedBudgets, { status: 200 });
   } catch (error) {
@@ -72,37 +77,27 @@ export async function GET() {
 
 export async function PUT(req: Request) {
   try {
-    const body = await req.json();  
-    console.log("Request Body:", body);
-    
-    const { name, amount, createdAt,id } = body;
+    const body = await req.json();
+    const { name, amount, createdAt, id } = body;
 
     if (!id) {
-        console.log("Error: Expense ID is missing");
-        return NextResponse.json(
-            { error: "Expense ID is missing." },
-            { status: 400 }
-        );
+      return NextResponse.json({ error: "Expense ID is missing." }, { status: 400 });
     }
-    const expenseUpdated = await prisma.budget.update({
-        where: { id: parseInt(id) }, 
-        data: { name, amount, createdAt }
-    });
-    
-    return NextResponse.json(
-          { message: "Expense updated successfully", data: expenseUpdated },
-          { status: 200 }
-    );
-  } catch (error) {
-      console.error("Error updating expense:", error);
 
-      return NextResponse.json(
-          { error: "Error occurred while updating expense." },
-          { status: 500 }
+    const expenseUpdated = await prisma.budget.update({
+      where: { id: parseInt(id) },
+      data: { name, amount, createdAt },
+    });
+
+    return NextResponse.json({ message: "Expense updated successfully", data: expenseUpdated }, { status: 200 });
+  } catch (error) {
+    console.error("Error updating expense:", error);
+    return NextResponse.json(
+      { error: "Error occurred while updating expense." },
+      { status: 500 }
     );
   }
 }
-
 
 export async function DELETE(req: NextRequest) {
   try {
@@ -110,22 +105,16 @@ export async function DELETE(req: NextRequest) {
     const deleteId = url.searchParams.get("id");
 
     if (!deleteId) {
-      return NextResponse.json(
-        { error: "Expense Id is not present there." },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: "Expense Id is missing." }, { status: 400 });
     }
-    
+
     await prisma.expense.delete({
-      where: { id: parseInt(deleteId) }
-    })
-    
-    return NextResponse.json(
-      { message: "Deleted" },
-      { status: 200 }
-    )
+      where: { id: parseInt(deleteId) },
+    });
+
+    return NextResponse.json({ message: "Deleted" }, { status: 200 });
   } catch (error) {
-    console.error("Error deleteing budget:", error);
-    return NextResponse.json({ error: "Error occurred while  deleteing budget" }, { status: 500 });
+    console.error("Error deleting budget:", error);
+    return NextResponse.json({ error: "Error occurred while deleting budget" }, { status: 500 });
   }
 }

@@ -1,7 +1,6 @@
 import prisma from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
-
 export async function POST(req: Request) {
   try {
     const body = await req.json();
@@ -22,14 +21,12 @@ export async function POST(req: Request) {
 
     return NextResponse.json(createExpense, { status: 200 });
   } catch (error) {
-    console.error("Error creating expense:", error);
     return NextResponse.json(
-      { error: "Error Occurred" },
+      { error: "Error occurred while creating expense" },
       { status: 400 }
     );
   }
 }
-
 
 export async function GET(req: Request) {
   try {
@@ -44,21 +41,17 @@ export async function GET(req: Request) {
     }
 
     const getExpense = await prisma.expense.findMany({
-      where: {
-        userId: userId,
-      },
+      where: { userId },
     });
 
     return NextResponse.json(getExpense, { status: 200 });
   } catch (error) {
-    console.error("Error fetching expenses:", error);
     return NextResponse.json(
-      { error: "Error Occurred" },
+      { error: "Error occurred while fetching expenses" },
       { status: 400 }
     );
   }
 }
-
 
 export async function DELETE(req: Request) {
   try {
@@ -71,21 +64,19 @@ export async function DELETE(req: Request) {
         { status: 400 }
       );
     }
-    
+
     await prisma.expense.delete({
       where: { id: parseInt(expenseId) },
     });
 
     return NextResponse.json({ message: "Deleted" }, { status: 200 });
   } catch (error) {
-    console.error("Error deleting expense:", error);
     return NextResponse.json(
-      { error: "Error Occurred" },
+      { error: "Error occurred while deleting expense" },
       { status: 400 }
     );
   }
 }
-
 
 export async function PUT(req: Request) {
   try {
@@ -112,7 +103,6 @@ export async function PUT(req: Request) {
       { status: 200 }
     );
   } catch (error) {
-    console.error("Error updating expense:", error);
     return NextResponse.json(
       { error: "Error occurred while updating expense" },
       { status: 500 }

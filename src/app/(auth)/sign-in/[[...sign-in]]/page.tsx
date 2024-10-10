@@ -6,7 +6,6 @@ export default function Page() {
   return (
     <section className="bg-gray-50 min-h-screen flex flex-col items-center justify-center">
       <div className="lg:grid lg:grid-cols-12 lg:min-h-screen w-full">
-        {/* Image Section */}
         <section className="relative h-64 lg:col-span-5 lg:h-auto xl:col-span-6 bg-gray-900">
           <Image
             alt="Background image"
